@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Linq;
 using TestNinja.Fundamentals;
 
 namespace TestNinja.UnitTests
@@ -38,5 +39,32 @@ namespace TestNinja.UnitTests
         }
 
       
+        [Test]
+        public void GetOddNumbers_LimitIsGreaterThanZero_ReturnsOddNumbersUptoLimit()
+        {
+            var result = _math.GetOddNumbers(5);
+
+            //Assert.That(result, Is.Not.Empty);
+
+            //Assert.That(result.Count(), Is.EqualTo(3));
+
+            //Assert.That(result, Does.Contain(1));
+            //Assert.That(result, Does.Contain(3));
+            //Assert.That(result, Does.Contain(5));
+
+            Assert.That(result, Is.EquivalentTo(new[] { 1, 3, 5 }));
+
+            //Assert.That(result, Is.Ordered);
+            //Assert.That(result, Is.Unique);
+        }
+
+
+        [Test]
+        public void GetOddNumbers_LimitIsLessThanZero_ReturnsEmpty()
+        {
+            var result = _math.GetOddNumbers(-3);
+
+            Assert.That(result, Is.Empty);            
+        }
     }
 }
