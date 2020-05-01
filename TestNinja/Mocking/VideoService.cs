@@ -26,9 +26,14 @@ namespace TestNinja.Mocking
 
 
         // It can be safely combined using one ctor
-        public VideoService(IFileReader fileReader = null)
+        //public VideoService(IFileReader fileReader = null)
+        //{
+        //    _fileReader = fileReader ?? new FileReader() ;
+        //}
+
+        public VideoService(IFileReader fileReader)
         {
-            _fileReader = fileReader ?? new FileReader() ;
+            _fileReader = fileReader;
         }
 
 
