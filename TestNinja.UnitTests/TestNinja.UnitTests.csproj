@@ -74,6 +74,9 @@
     <Compile Include="HtmlFormatterTests.cs" />
     <Compile Include="MathTests.cs" />
     <Compile Include="Mocking\FakeFileReader.cs" />
+    <Compile Include="Mocking\TestForMoqLib\SimpleClass.cs" />
+    <Compile Include="Mocking\TestForMoqLib\AbstractClass.cs" />
+    <Compile Include="Mocking\TestForMoqLib\MoqTests.cs" />
     <Compile Include="Mocking\VideoServiceTests.cs" />
     <Compile Include="ReservationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
