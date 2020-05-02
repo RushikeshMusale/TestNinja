@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using TestNinja.Mocking;
 
 namespace TestNinja.Mocking
 {

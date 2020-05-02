@@ -17,7 +17,7 @@ namespace TestNinja.Mocking
                      where !video.IsProcessed
                      select video).ToList();
                 return videos;
-            }            
+            }
         }
     }
 }
