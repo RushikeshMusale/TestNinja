@@ -10,6 +10,7 @@ namespace TestNinja.Mocking
     public class VideoService
     {
         private IFileReader _fileReader { get; set; }
+        private IVideoRepository _videoRepository;
 
         //// This can be used to inject FakeFileReader in UnitTests
         //public VideoService(IFileReader fileReader)
@@ -26,15 +27,18 @@ namespace TestNinja.Mocking
 
 
         // It can be safely combined using one ctor
-        //public VideoService(IFileReader fileReader = null)
-        //{
-        //    _fileReader = fileReader ?? new FileReader() ;
-        //}
-
-        public VideoService(IFileReader fileReader)
+        public VideoService(IFileReader fileReader = null, IVideoRepository repository= null)
         {
-            _fileReader = fileReader;
+            _fileReader = fileReader ?? new FileReader();
+            _videoRepository = repository ?? new VideoRepository( );
         }
+
+
+        //when we are using dependency injection
+        //public VideoService(IFileReader fileReader)
+        //{
+        //    _fileReader = fileReader;
+        //}
 
 
         public string ReadVideoTitle()
@@ -49,19 +53,15 @@ namespace TestNinja.Mocking
         public string GetUnprocessedVideosAsCsv()
         {
             var videoIds = new List<int>();
-            
-            using (var context = new VideoContext())
-            {
-                var videos = 
-                    (from video in context.Videos
-                    where !video.IsProcessed
-                    select video).ToList();
-                
-                foreach (var v in videos)
-                    videoIds.Add(v.Id);
 
-                return String.Join(",", videoIds);
-            }
+            // Move the quering logic to separate class, as it it depends on database
+
+            var videos = _videoRepository.GetUnprocessedVideos();
+
+            foreach (var v in videos)
+                videoIds.Add(v.Id);
+
+            return String.Join(",", videoIds);
         }
     }
 
