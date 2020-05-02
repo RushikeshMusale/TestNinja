@@ -75,6 +75,7 @@
     <Compile Include="MathTests.cs" />
     <Compile Include="Mocking\FakeFileReader.cs" />
     <Compile Include="Mocking\OrderServiceTests.cs" />
+    <Compile Include="Mocking\ProductTests.cs" />
     <Compile Include="Mocking\TestForMoqLib\SimpleClass.cs" />
     <Compile Include="Mocking\TestForMoqLib\AbstractClass.cs" />
     <Compile Include="Mocking\TestForMoqLib\MoqTests.cs" />
