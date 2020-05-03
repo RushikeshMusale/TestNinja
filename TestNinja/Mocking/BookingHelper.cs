@@ -6,24 +6,35 @@ namespace TestNinja.Mocking
 {
     public static class BookingHelper
     {
-        public static string OverlappingBookingsExist(Booking booking)
+        // There are two ways to do this, since static constructor can not have parameters,
+        // either we have to use property injection, or paremeter injection
+
+        // Option 1: Property injection
+
+        //public static IBookingRepository _bookingRepository { get; set; }
+
+        //static BookingHelper()
+        //{
+        //    _bookingRepository = new BookingRepository();
+        //}        
+        
+
+        // Option 2 : Parameter injection
+        public static string OverlappingBookingsExist(Booking booking, IBookingRepository bookingRepository)
         {
             if (booking.Status == "Cancelled")
                 return string.Empty;
 
-            var unitOfWork = new UnitOfWork();
-            var bookings =
-                unitOfWork.Query<Booking>()
-                    .Where(
-                        b => b.Id != booking.Id && b.Status != "Cancelled");
+
+            IQueryable<Booking> bookings = bookingRepository.GetActiveBookings(booking.Id);
 
             var overlappingBooking =
-                bookings.FirstOrDefault(
-                    b =>
-                        booking.ArrivalDate >= b.ArrivalDate
-                        && booking.ArrivalDate < b.DepartureDate
-                        || booking.DepartureDate > b.ArrivalDate
-                        && booking.DepartureDate <= b.DepartureDate);
+              bookings.FirstOrDefault(
+                  b =>
+                      booking.ArrivalDate >= b.ArrivalDate
+                      && booking.ArrivalDate < b.DepartureDate
+                      || booking.DepartureDate > b.ArrivalDate
+                      && booking.DepartureDate <= b.DepartureDate);
 
             return overlappingBooking == null ? string.Empty : overlappingBooking.Reference;
         }
