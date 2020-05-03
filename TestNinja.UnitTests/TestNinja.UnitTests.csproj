@@ -67,6 +67,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BookingHelperTests.cs" />
     <Compile Include="CustomerControllerTests.cs" />
     <Compile Include="DemeritPointsCalculatorTests.cs" />
     <Compile Include="EmployeeControllerTests.cs" />
