@@ -19,6 +19,7 @@ namespace TestNinja.UnitTests.Mocking
         private Housekeeper _houseKeeper;
         private HousekeeperHelper _service;
         private DateTime _statementDate = new DateTime(2020, 5, 3);
+        private string _statementFileName="filename";
 
         [SetUp]
         public void Setup()
@@ -83,6 +84,90 @@ namespace TestNinja.UnitTests.Mocking
             // Test thate save statement is not called
             _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate), Times.Never);
 
+        }
+
+
+        [Test]
+        public void SendStatementEmails_WhenCalled_SendEmailStatment()
+        {
+            
+            _statementGenerator
+                .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+                .Returns(_statementFileName);
+
+            _service.SendStatementEmails(_statementDate);
+
+            _emailSender.Verify(es => es.EmailFile(
+                _houseKeeper.Email, 
+                _houseKeeper.StatementEmailBody, 
+                _statementFileName, 
+                It.IsAny<string>()));            
+        }
+
+        [Test]
+        public void SendStatementEmails_StatementFileNameIsNull_ShouldNotSendEmailStatment()
+        {
+            // Another way to return null object is to pass lamda expression () => null
+            // Or we can use generic method .Returns<string>(null)
+            _statementGenerator
+                .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+                .Returns(() => null);
+
+            //_statementGenerator
+            //    .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+            //    .Returns<string>(null);
+
+            _service.SendStatementEmails(_statementDate);
+
+            _emailSender.Verify(es => es.EmailFile(
+                _houseKeeper.Email,
+                _houseKeeper.StatementEmailBody,
+                _statementFileName,
+                It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
+        public void SendStatementEmails_StatementFileNameIsEmpty_ShouldNotSendEmailStatment()
+        {
+            // Another way to return null object is to pass lamda expression () => null
+            // Or we can use generic method .Returns<string>(null)
+            _statementGenerator
+                .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+                .Returns("");
+
+            //_statementGenerator
+            //    .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+            //    .Returns<string>(null);
+
+            _service.SendStatementEmails(_statementDate);
+
+            _emailSender.Verify(es => es.EmailFile(
+                _houseKeeper.Email,
+                _houseKeeper.StatementEmailBody,
+                _statementFileName,
+                It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
+        public void SendStatementEmails_StatementFileNameIsWhiteSpace_ShouldNotSendEmailStatment()
+        {
+            // Another way to return null object is to pass lamda expression () => null
+            // Or we can use generic method .Returns<string>(null)
+            _statementGenerator
+                .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+                .Returns(" ");
+
+            //_statementGenerator
+            //    .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
+            //    .Returns<string>(null);
+
+            _service.SendStatementEmails(_statementDate);
+
+            _emailSender.Verify(es => es.EmailFile(
+                _houseKeeper.Email,
+                _houseKeeper.StatementEmailBody,
+                _statementFileName,
+                It.IsAny<string>()), Times.Never);
         }
     }
 }
