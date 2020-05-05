@@ -12,24 +12,42 @@ namespace TestNinja.UnitTests.Mocking
     [TestFixture]
     class HousekeeperHelperTests
     {
+        private Mock<IUnitOfWork> _unitOfWork;
+        private Mock<IStatementGenerator> _statementGenerator;
+        private Mock<IEmailSender> _emailSender;
+        private Mock<IXtraMessageBox> _messageBox;
+        private Housekeeper _houseKeeper;
+        private HousekeeperHelper _service;
+        private DateTime _statementDate;
+
+        [SetUp]
+        public void Setup()
+        {
+            
+            _unitOfWork = new Mock<IUnitOfWork>();
+            _houseKeeper = new Housekeeper { Oid = 1, Email = "a", FullName = "b", StatementEmailBody = "c" };
+
+            _unitOfWork.Setup(uow => uow.Query<Housekeeper>()).Returns(new List<Housekeeper>
+            {
+                _houseKeeper    
+            }.AsQueryable());
+
+            _statementGenerator = new Mock<IStatementGenerator>();
+            _emailSender = new Mock<IEmailSender>();
+            _messageBox = new Mock<IXtraMessageBox>();
+
+            _service = new HousekeeperHelper(_unitOfWork.Object, _statementGenerator.Object, _emailSender.Object, _messageBox.Object);
+        }
+
         [Test]
         public void SendStatementEmails_WhenCalled_GeneratesStatementReport()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(uow => uow.Query<Housekeeper>()).Returns(new List<Housekeeper>
-            {
-                new Housekeeper { Oid=1, Email="a", FullName="b", StatementEmailBody="c" }
-            }.AsQueryable());
 
-            var statementGenerator = new Mock<IStatementGenerator>();
-            var emailSender = new Mock<IEmailSender>();
-            var messageBox = new Mock<IXtraMessageBox>();
+            _statementDate = new DateTime(2020, 5, 3);
 
-            var service = new HousekeeperHelper(unitOfWork.Object, statementGenerator.Object, emailSender.Object, messageBox.Object);
+            _service.SendStatementEmails(_statementDate);
 
-            service.SendStatementEmails(new DateTime(2020, 5, 3));
-
-            statementGenerator.Verify(sg => sg.SaveStatement(1, "b", new DateTime(2020, 5, 3)));
+            _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate));
 
         }
     }
