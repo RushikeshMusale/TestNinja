@@ -155,18 +155,14 @@ namespace TestNinja.UnitTests.Mocking
             // Or we can use generic method .Returns<string>(null)
             _statementGenerator
                 .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
-                .Returns(" ");
-
-            //_statementGenerator
-            //    .Setup(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate))
-            //    .Returns<string>(null);
+                .Returns(" ");            
 
             _service.SendStatementEmails(_statementDate);
 
             _emailSender.Verify(es => es.EmailFile(
-                _houseKeeper.Email,
-                _houseKeeper.StatementEmailBody,
-                _statementFileName,
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<string>()), Times.Never);
         }
     }
