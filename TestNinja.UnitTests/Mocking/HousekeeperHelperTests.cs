@@ -18,7 +18,7 @@ namespace TestNinja.UnitTests.Mocking
         private Mock<IXtraMessageBox> _messageBox;
         private Housekeeper _houseKeeper;
         private HousekeeperHelper _service;
-        private DateTime _statementDate;
+        private DateTime _statementDate = new DateTime(2020, 5, 3);
 
         [SetUp]
         public void Setup()
@@ -41,13 +41,47 @@ namespace TestNinja.UnitTests.Mocking
 
         [Test]
         public void SendStatementEmails_WhenCalled_GeneratesStatementReport()
-        {
-
-            _statementDate = new DateTime(2020, 5, 3);
+        {            
 
             _service.SendStatementEmails(_statementDate);
 
             _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate));
+
+        }
+
+        [Test]
+        public void SendStatementEmails_HousekeepersEmailIsNull_ShouldNotGeneratesStatementReport()
+        {
+            _houseKeeper.Email = null;
+
+            _service.SendStatementEmails(_statementDate);
+
+            // Test thate save statement is not called
+            _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate), Times.Never);
+
+        }
+
+        [Test]
+        public void SendStatementEmails_HousekeepersEmailIsWhiteSpace_ShouldNotGeneratesStatementReport()
+        {
+            _houseKeeper.Email = " ";
+
+            _service.SendStatementEmails(_statementDate);
+
+            // Test thate save statement is not called
+            _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate), Times.Never);
+
+        }
+
+        [Test]
+        public void SendStatementEmails_HousekeepersEmailIsEmpty_ShouldNotGeneratesStatementReport()
+        {
+            _houseKeeper.Email = "";
+
+            _service.SendStatementEmails(_statementDate);
+
+            // Test thate save statement is not called
+            _statementGenerator.Verify(sg => sg.SaveStatement(_houseKeeper.Oid, _houseKeeper.FullName, _statementDate), Times.Never);
 
         }
     }
